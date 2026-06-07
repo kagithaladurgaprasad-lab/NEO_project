@@ -70,7 +70,7 @@ st.markdown("<div class='subtitle'>AI-Powered Planetary Defense Intelligence</di
 # 3. Sidebar & Model Loading
 # -------------------------------------------------------------------------
 st.sidebar.markdown("### 🛠️ Control Panel")
-available_models = [f for f in os.listdir(".") if f.endswith("_final_model.pkl")]
+available_models = [f for f in os.listdir(".") if f.endswith("model.pkl")]
 
 if not available_models:
     st.sidebar.error("❌ No trained model (*_final_model.pkl) found in workspace.")
