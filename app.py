@@ -73,7 +73,7 @@ st.sidebar.markdown("### 🛠️ Control Panel")
 available_models = [f for f in os.listdir(".") if f.endswith("model.pkl")]
 
 if not available_models:
-    st.sidebar.error("❌ No trained model (*_final_model.pkl) found in workspace.")
+    st.sidebar.error("❌ No trained model (*model.pkl) found in workspace.")
     st.error("Please place your trained model pipeline file in the directory to proceed.")
     st.stop()
 
