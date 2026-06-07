@@ -95,7 +95,7 @@ except Exception as e:
     st.stop()
 
 # -------------------------------------------------------------------------
-# 4. Interactive Input Dashboard (Fully Manual & Adjustable)
+# 4. Interactive Input Dashboard (All Manual + Step Button Layout)
 # -------------------------------------------------------------------------
 st.markdown("### 🛰️ Telemetry Input Matrix")
 
@@ -105,42 +105,45 @@ with tab1:
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        est_dia_min = st.slider(
+        # Changed from slider to dynamic number input box with increments
+        est_dia_min = st.number_input(
             "Minimum Estimated Diameter (km)",
-            min_value=0.001, max_value=5.0, value=0.25, step=0.001,
-            format="%.3f"
+            min_value=0.000, max_value=15.000, value=0.250, step=0.005,
+            format="%.3f",
+            help="Type manually or use +/- to adjust by 0.005 km increments."
         )
-        est_dia_max = st.slider(
+        # Changed from slider to dynamic number input box with increments
+        est_dia_max = st.number_input(
             "Maximum Estimated Diameter (km)",
-            min_value=0.001, max_value=11.0, value=0.55, step=0.001,
-            format="%.3f"
+            min_value=0.000, max_value=30.000, value=0.550, step=0.005,
+            format="%.3f",
+            help="Type manually or use +/- to adjust by 0.005 km increments."
         )
     with col2:
-        # Changed to a slider for quick, manual tuning adjustments
-        abs_mag = st.slider(
+        # Changed from slider to dynamic number input box with increments
+        abs_mag = st.number_input(
             "Absolute Magnitude (H)",
-            min_value=10.0, max_value=35.0, value=20.0, step=0.1,
-            help="The visual magnitude an object would have if it were 1 AU from both the Sun and Earth. Lower means brighter/larger."
+            min_value=5.0, max_value=40.0, value=20.0, step=0.1,
+            format="%.1f",
+            help="The visual magnitude an object would have if it were 1 AU from both the Sun and Earth. Adjust by 0.1."
         )
 
 with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
     col3, col4 = st.columns(2)
     with col3:
-        # Added explicit min/max boundaries and active stepping so it's easily adjustable
         rel_vel = st.number_input(
             "Relative Velocity (km/h)",
-            min_value=1000.0, max_value=200000.0, value=45000.0, step=500.0, 
+            min_value=0.0, max_value=300000.0, value=45000.0, step=500.0, 
             format="%.1f",
-            help="Adjust manually using the '+' or '-' buttons, or type your custom speed value directly."
+            help="Adjust manually or use +/- to change by 500.0 km/h."
         )
     with col4:
-        # Added explicit min/max boundaries and active stepping so it's easily adjustable
         miss_dist = st.number_input(
             "Miss Distance (km)",
-            min_value=100000.0, max_value=80000000.0, value=35000000.0, step=50000.0, 
+            min_value=0.0, max_value=150000000.0, value=35000000.0, step=50000.0, 
             format="%.1f",
-            help="Distance by which the object misses Earth. Adjust using buttons or type manually."
+            help="Distance by which the object misses Earth. Adjust by 50,000 km vectors."
         )
 
 st.markdown("---")
@@ -155,6 +158,10 @@ with st.container():
     m3.metric("Miss Distance", f"{miss_dist:,.0f} km")
 
 st.markdown("<br>", unsafe_allow_html=True)
+
+# Validation check to ensure consistency before launching inference
+if est_dia_min > est_dia_max:
+    st.warning("⚠️ Telemetry Alert: Minimum diameter should not exceed maximum diameter parameters.")
 
 # -------------------------------------------------------------------------
 # 6. Real-time Threat Analysis & Inference
