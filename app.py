@@ -4,16 +4,17 @@ import joblib
 import os
 
 # -------------------------------------------------------------------------
-# 1. Page Configuration & Styling
+# Page Configuration
 # -------------------------------------------------------------------------
 st.set_page_config(
     page_title="NEO Hazard Predictor",
     page_icon="☄️",
-    layout="centered",
-    initial_sidebar_state="expanded"
+    layout="centered"
 )
 
+# -------------------------------------------------------------------------
 # Custom CSS
+# -------------------------------------------------------------------------
 st.markdown("""
 <style>
 .main-title {
@@ -21,20 +22,19 @@ st.markdown("""
     font-weight: 800;
     color: #FF4B4B;
     text-align: center;
-    margin-bottom: 5px;
 }
 
 .subtitle {
     font-size: 18px;
     color: #A0AEC0;
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------------------
-# 2. Header Section
+# Header
 # -------------------------------------------------------------------------
 st.markdown(
     "<div class='main-title'>☄️ Near-Earth Objects (NEO)</div>",
@@ -42,100 +42,98 @@ st.markdown(
 )
 
 st.markdown(
-    "<div class='subtitle'>AI-Powered Asteroid Hazard Assessment & Classification Portal</div>",
+    "<div class='subtitle'>AI-Powered Asteroid Hazard Assessment</div>",
     unsafe_allow_html=True
 )
 
 st.markdown("---")
 
 # -------------------------------------------------------------------------
-# 3. Load Model
+# Load Model
 # -------------------------------------------------------------------------
-available_models = [
-    f for f in os.listdir(".")
-    if f.endswith("_final_model.pkl")
-]
+MODEL_PATH = "model.pkl"
 
-if not available_models:
-    st.error("No trained model found.")
+if not os.path.exists(MODEL_PATH):
+    st.error("❌ model.pkl not found in project folder")
     st.stop()
 
-selected_model_file = st.sidebar.selectbox(
-    "Select Model",
-    available_models
-)
-
 @st.cache_resource
-def load_pipeline(model_path):
-    return joblib.load(model_path)
+def load_model():
+    return joblib.load(MODEL_PATH)
 
-pipeline = load_pipeline(selected_model_file)
+pipeline = load_model()
+
+st.sidebar.success("✅ Loaded: model.pkl")
 
 # -------------------------------------------------------------------------
-# 4. Inputs
+# Inputs
 # -------------------------------------------------------------------------
+st.subheader("Asteroid Parameters")
+
 col1, col2 = st.columns(2)
 
 with col1:
-    est_dia_min = st.slider(
-        "Minimum Diameter (km)",
-        0.001, 5.0, 0.25
+    est_diameter_min = st.number_input(
+        "Estimated Diameter Min",
+        min_value=0.0,
+        value=0.25
     )
 
-    est_dia_max = st.slider(
-        "Maximum Diameter (km)",
-        0.001, 11.0, 0.55
+    est_diameter_max = st.number_input(
+        "Estimated Diameter Max",
+        min_value=0.0,
+        value=0.55
     )
 
-    abs_mag = st.number_input(
+    absolute_magnitude = st.number_input(
         "Absolute Magnitude",
         value=20.0
     )
 
 with col2:
-    rel_vel = st.number_input(
+    relative_velocity = st.number_input(
         "Relative Velocity",
+        min_value=0.0,
         value=45000.0
     )
 
-    miss_dist = st.number_input(
+    miss_distance = st.number_input(
         "Miss Distance",
+        min_value=0.0,
         value=35000000.0
     )
 
 # -------------------------------------------------------------------------
-# 5. Prediction
+# Prediction
 # -------------------------------------------------------------------------
 if st.button("Analyze Threat Level"):
 
-    input_data = pd.DataFrame([{
-        "est_diameter_min": est_dia_min,
-        "est_diameter_max": est_dia_max,
-        "relative_velocity": rel_vel,
-        "miss_distance": miss_dist,
-        "absolute_magnitude": abs_mag
-    }])
+    input_df = pd.DataFrame({
+        "est_diameter_min": [est_diameter_min],
+        "est_diameter_max": [est_diameter_max],
+        "relative_velocity": [relative_velocity],
+        "miss_distance": [miss_distance],
+        "absolute_magnitude": [absolute_magnitude]
+    })
 
-    prediction = pipeline.predict(input_data)[0]
+    try:
+        prediction = pipeline.predict(input_df)[0]
 
-    if prediction == 1:
-        st.markdown("""
-        <div style="padding:20px;border:2px solid red;border-radius:10px;">
-            <h3>⚠️ HAZARDOUS THREAT DETECTED</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        st.subheader("Prediction Result")
 
-    else:
-        st.markdown("""
-        <div style="padding:20px;border:2px solid green;border-radius:10px;">
-            <h3>✅ CLASSIFIED AS SAFE</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        if prediction == 1:
+            st.error("⚠️ Hazardous Asteroid Detected")
+        else:
+            st.success("✅ Asteroid Classified as Safe")
+
+    except Exception as e:
+        st.error(f"Prediction Error: {e}")
 
 # -------------------------------------------------------------------------
-# 6. Footer
+# Footer
 # -------------------------------------------------------------------------
-st.markdown("<br><br>", unsafe_allow_html=True)
-
-with st.expander("About the Data Metrics"):
-    st.write("NEO hazard prediction model.")
+with st.expander("About"):
+    st.write(
+        "This application predicts whether a Near-Earth Object "
+        "is hazardous using a trained machine learning model."
+    )
