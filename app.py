@@ -95,11 +95,10 @@ except Exception as e:
     st.stop()
 
 # -------------------------------------------------------------------------
-# 4. Interactive Input Dashboard
+# 4. Interactive Input Dashboard (Fully Manual & Adjustable)
 # -------------------------------------------------------------------------
 st.markdown("### 🛰️ Telemetry Input Matrix")
 
-# Split configuration parameters into logical tabs for a cleaner user experience
 tab1, tab2 = st.tabs(["📏 Physical Properties", "🌌 Orbital Dynamics"])
 
 with tab1:
@@ -117,25 +116,31 @@ with tab1:
             format="%.3f"
         )
     with col2:
-        abs_mag = st.number_input(
+        # Changed to a slider for quick, manual tuning adjustments
+        abs_mag = st.slider(
             "Absolute Magnitude (H)",
-            value=20.0, step=0.1,
-            help="The visual magnitude an object would have if it were 1 AU from both the Sun and Earth."
+            min_value=10.0, max_value=35.0, value=20.0, step=0.1,
+            help="The visual magnitude an object would have if it were 1 AU from both the Sun and Earth. Lower means brighter/larger."
         )
 
 with tab2:
     st.markdown("<br>", unsafe_allow_html=True)
     col3, col4 = st.columns(2)
     with col3:
+        # Added explicit min/max boundaries and active stepping so it's easily adjustable
         rel_vel = st.number_input(
             "Relative Velocity (km/h)",
-            value=45000.0, step=500.0, format="%.1f"
+            min_value=1000.0, max_value=200000.0, value=45000.0, step=500.0, 
+            format="%.1f",
+            help="Adjust manually using the '+' or '-' buttons, or type your custom speed value directly."
         )
     with col4:
+        # Added explicit min/max boundaries and active stepping so it's easily adjustable
         miss_dist = st.number_input(
             "Miss Distance (km)",
-            value=35000000.0, step=50000.0, format="%.1f",
-            help="Distance by which the object misses Earth."
+            min_value=100000.0, max_value=80000000.0, value=35000000.0, step=50000.0, 
+            format="%.1f",
+            help="Distance by which the object misses Earth. Adjust using buttons or type manually."
         )
 
 st.markdown("---")
@@ -154,7 +159,6 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -------------------------------------------------------------------------
 # 6. Real-time Threat Analysis & Inference
 # -------------------------------------------------------------------------
-# Center the analysis button using columns
 _, btn_col, _ = st.columns([1, 2, 1])
 
 with btn_col:
