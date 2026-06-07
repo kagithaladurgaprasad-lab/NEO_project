@@ -39,7 +39,7 @@ st.markdown("""
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
     }
     </style>
-""", unsafe_html=True)
+""", unsafe_allow_html=True)
 
 # -------------------------------------------------------------------------
 # 2. Header Section
@@ -98,7 +98,7 @@ with col2:
 # -------------------------------------------------------------------------
 # 5. Prediction Execution
 # -------------------------------------------------------------------------
-st.markdown("<br>", unsafe_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 if st.button("🔥 Analyze Threat Level", use_container_width=True):
     
     # Format the explicit feature matrix exact to how the models were trained
@@ -125,7 +125,7 @@ if st.button("🔥 Analyze Threat Level", use_container_width=True):
                     this object is classified as a <strong>Potentially Hazardous Asteroid (PHA)</strong>. Continuous telemetry monitoring is highly recommended.
                 </p>
             </div>
-        """, unsafe_html=True)
+        """, unsafe_allow_html=True)
     else:
         st.markdown("""
             <div style="background-color: rgba(34, 197, 94, 0.2); border: 2px solid #22C55E; padding: 25px; border-radius: 10px;">
@@ -135,7 +135,7 @@ if st.button("🔥 Analyze Threat Level", use_container_width=True):
                     pose no immediate risk or atmospheric impact threats to Earth.
                 </p>
             </div>
-        """, unsafe_html=True)
+        """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------------------
 # 6. Extra UI Elements (Explainer Footer)
